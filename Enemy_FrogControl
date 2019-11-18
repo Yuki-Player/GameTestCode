@@ -1,0 +1,95 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class FrogControl : Enemy
+{
+    private Rigidbody2D rgbd;
+    public float speed = 10f;    // the frog's moving speed
+
+    //the frog's moving distance
+    public Transform leftPoint;  
+    public Transform rightPoint;
+
+    private bool FaceLeft = true;
+    float leftX;
+    float rightX;
+ 
+    public float JumpForce;
+    public LayerMask ground;
+    public Collider2D colli;
+
+    // Start is called before the first frame update
+   protected override void Start()
+    {
+        base.Start();
+        rgbd = GetComponent<Rigidbody2D>();
+        leftX = leftPoint.position.x;
+        rightX = rightPoint.position.x;
+
+    }
+
+    // Update is called once per frame
+    
+    void Update()
+    {
+
+        SwitchAnim();
+    }
+    void SwitchAnim() //the frog's animation control
+    {
+        if (anim.GetBool("jump"))
+        {
+            if (rgbd.velocity.y < 0.1)
+            {
+                anim.SetBool("jump", false);
+                anim.SetBool("fall", true);
+            }
+        }
+        if (colli.IsTouchingLayers(ground) && anim.GetBool("fall"))
+        {
+            anim.SetBool("fall", false);
+
+        }
+    }
+    void Movement() // the frog's movement
+    {
+        if (FaceLeft == true)
+        {
+            if (colli.IsTouchingLayers(ground))
+            {
+                anim.SetBool("jump", true);
+                rgbd.velocity = new Vector2(-speed, JumpForce);
+
+
+            }
+            if (transform.position.x < leftX)
+            {
+                transform.localScale = new Vector3(-1, 1, 1);
+                FaceLeft = false;
+            }
+
+        }
+        else
+        {
+            if (colli.IsTouchingLayers(ground))
+            {
+                anim.SetBool("jump", true);
+                rgbd.velocity = new Vector2(speed, JumpForce);
+
+
+            }
+
+            if (transform.position.x > rightX)
+            {
+                transform.localScale = new Vector3(1, 1, 1);
+                FaceLeft = true;
+
+            }
+        }
+        
+    }
+   
+
+
+}
