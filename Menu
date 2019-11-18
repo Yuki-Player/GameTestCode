@@ -1,0 +1,44 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.Audio;
+
+
+
+public class Menu : MonoBehaviour
+{
+    public GameObject PauseGame;
+    public AudioMixer GameBGM;
+    public void PlayGame()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+    }
+    public void QuitGame()
+    {
+        Application.Quit();
+    }
+    public void GamePause()
+
+    {
+        PauseGame.SetActive(true);
+        Time.timeScale = 0;
+
+    }
+    public void GameResume()
+
+    {
+        PauseGame.SetActive(false);
+        Time.timeScale = 1f;
+    }
+    public void SetVolume(float Volume) // set the volume of game's bgm
+    {
+        GameBGM.SetFloat("MainBGM", Volume);
+    }
+    public void BackToMenu()
+    {
+        SceneManager.LoadScene("Menu");
+        Time.timeScale = 1f;
+    }
+}  
+
