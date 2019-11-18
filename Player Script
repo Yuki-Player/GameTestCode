@@ -1,0 +1,258 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+
+public class Player : MonoBehaviour
+{
+    
+    public float speed = 10.0f;  // player's moving speed
+    public Animator anim;        // player's action control
+    public LayerMask ground;
+    public Collider2D colli;     // player's collider
+    public Text CherryNum;
+    public float hitForce = 2.0f; // when the player was hit by enemy, there was a hitforce
+    public bool isHurt;
+    public AudioSource JumpAudio, HurtAudio, CherryAudio,heartAudio,BGM,DeathAudio; // all the game audio
+    private Animator CherryAnim;
+    public  int LifeNum = 2;    // player's life
+    public Image heart1,heart2,heart3;
+    private Rigidbody2D rdby;
+    public float JumpForce = 10f;
+    public int Cherry ; // the collection
+
+    void Start()
+    {
+        HeartNum(); // count the heart at the beginning
+        rdby = GetComponent<Rigidbody2D>();
+       
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        HeartNum(); // update the heart number
+        CherryNum.text = Cherry.ToString(); 
+    }
+    void FixedUpdate()
+    {
+
+        Jump();
+        Move();
+        SwitchAnim();
+    }
+    void Move()// Make the player move
+    {   
+
+        if (isHurt == false)
+        {
+            float h = Input.GetAxisRaw("Horizontal");
+            transform.Translate(Vector3.right * h * speed * Time.fixedDeltaTime, Space.World);
+            if (h == -1)
+            {
+                
+                transform.localScale = new Vector3(-0.7f,0.7f,0.7f);
+                anim.SetFloat("running", 1);
+            }
+            else if (h ==1)
+            {
+               
+                transform.localScale = new Vector3(0.7f, 0.7f, 0.7f);
+                anim.SetFloat("running", 1);
+            }
+            else 
+            {
+               
+                anim.SetFloat("running", 0);
+            }
+
+        }
+    }
+    void Jump()// make the player jump
+    {
+        if (Input.GetButton("Jump") && colli.IsTouchingLayers(ground) && isHurt==false)
+        {
+           
+
+            rdby.velocity = new Vector2(rdby.velocity.x, JumpForce *Time.fixedDeltaTime);
+            anim.SetBool("jumping", true);
+            JumpAudio.Play();
+        }
+
+    }
+    void SwitchAnim()//Change Player's animation
+    {
+        
+       if (rdby.velocity.y < 0.1f && !colli.IsTouchingLayers(ground))
+        {
+            anim.SetBool("falling", true);
+        }
+       if(colli.IsTouchingLayers(ground))
+        {
+            anim.SetBool("jumping", false);
+        }
+       if (anim.GetBool("jumping"))
+        {
+            if (rdby.velocity.y <0)
+            {
+                anim.SetBool("jumping", false);
+                anim.SetBool("falling", true);
+            }
+            
+        }
+
+        if (isHurt == true)
+        {
+           if (Mathf.Abs(rdby.velocity.x) < 0.1f)
+            {
+                anim.SetBool("isHurt", false);
+               
+                isHurt = false;
+            }
+           
+        }
+       if (colli.IsTouchingLayers(ground))
+        {
+            anim.SetBool("falling", false);
+
+            
+            
+
+        }
+    }
+    private void OnTriggerEnter2D(Collider2D collision) // collect cherry and heart
+    {
+        //collect cherry
+      if (collision.tag == "collection" && isHurt==false)
+        {
+          
+            collision.GetComponent<Animator>().Play("CherryCollected");
+            CherryAudio.Play();
+
+            
+
+        }
+      //Add heart
+      if(collision.tag=="heart" && isHurt == false)
+        {
+            collision.GetComponent<Animator>().Play("heartCollected");
+            heartAudio.Play();
+           
+            
+            
+        }
+       
+        
+    }
+    private void OnCollisionEnter2D(Collision2D collision) //hurt enemy or be hurt by enemy
+    {
+        
+        
+            //Death Trigger
+            if (collision.gameObject.tag == "DeadLine")
+        {
+            GetComponent<AudioSource>().enabled = false;
+            Invoke("Restart", 2f);
+            DeathAudio.Play();
+            LifeNum--;
+        }
+
+
+        Enemy Enemy = collision.gameObject.GetComponent<Enemy>();
+
+        if (collision.gameObject.tag == "Enemy")
+        {
+            if (anim.GetBool("falling") == true && isHurt==false) //hurt enemy
+            {
+
+                {
+                    Enemy.JumpOn();
+                    rdby.velocity = new Vector2(rdby.velocity.x, JumpForce * Time.deltaTime);
+                    anim.SetBool("jumping", true);
+
+                }
+
+            }
+            else if (collision.gameObject.transform.position.x < transform.position.x && isHurt == false)// hurt by the enemy in the right point
+            {
+                rdby.velocity = new Vector2(rdby.velocity.x+hitForce , JumpForce * Time.deltaTime);
+                anim.SetBool("isHurt", true);
+                LifeNum--;//life reduce
+                HurtAudio.Play();
+                isHurt = true;
+                
+
+               
+            }
+            else if (collision.gameObject.transform.position.x > transform.position.x && isHurt == false) //hurt by the enemy in the left point
+            {
+                rdby.velocity = new Vector2(rdby.velocity.x - hitForce, JumpForce * Time.deltaTime);
+                anim.SetBool("isHurt", true);
+                isHurt = true;
+                HurtAudio.Play();
+                LifeNum--;//life reduce
+
+            }
+
+        }
+    }
+    
+    
+    void LoadMainMenu()
+    {
+        SceneManager.LoadScene("Menu");
+    }
+    void HeartNum() // change of the heart in the UI
+    {
+        if (LifeNum == 2)
+        {
+            
+            heart1.color = new Color(1, 1, 1, 1);
+            heart2.color = new Color(1, 1, 1, 1);
+            heart3.color = new Color(1, 1, 1, 0);
+          
+        }
+       if(LifeNum==3)
+        {
+            
+            heart1.color = new Color(1, 1, 1, 1);
+            heart2.color = new Color(1, 1, 1, 1);
+            heart3.color = new Color(1, 1, 1, 1);
+          
+        }
+         if (LifeNum == 1)
+        {
+            
+            heart1.color = new Color(1, 1, 1, 1);
+            heart2.color = new Color(1, 1, 1, 0);
+            heart3.color = new Color(1, 1, 1, 0);
+        }
+      if(LifeNum==0)
+        {
+            heart1.color = new Color(1, 1, 1, 0);
+            heart2.color = new Color(1, 1, 1, 0);
+            heart3.color = new Color(1, 1, 1, 0);
+
+            Invoke("LoadMainMenu", 1.5f);
+        }
+
+
+    }
+    public void CherryCount()
+    {
+        Cherry+=1;
+        
+    }
+    public void LifeAdd()
+    {
+        LifeNum++;
+    }
+    public void Restart() // when the player fall down the platform, restart from the start point
+    {
+        transform.position = new Vector3(-27.16f, -17.04f);
+        gameObject.transform.localScale = new Vector3(0.7f, 0.7f, 0.7f);
+        GetComponent<AudioSource>().enabled = true;
+    }
+    
+}
