@@ -1,0 +1,29 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class CakeCollected : MonoBehaviour
+{
+    // when the cake is collected, the level is completed
+    public Animator Cake;
+    public GameObject LevelCompleted;
+    public AudioSource End;
+    private void OnTriggerEnter2D(Collider2D collision) // collect cake
+    {
+        if(collision.tag=="Player")
+        {
+            Cake.SetBool("Collected", true);
+            End.Play();
+            
+        }
+    }
+    public void CakeDestroy()
+    {
+        Destroy(gameObject,1f);
+        LevelCompleted.SetActive(true);
+    }
+    public void StopGame()
+    {
+        Time.timeScale = 0;
+    }
+}
