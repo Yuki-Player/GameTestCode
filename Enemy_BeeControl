@@ -1,0 +1,66 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class BeeControl : Enemy
+{
+    private Rigidbody2D rgbd;
+    public float speed = 10f; //bee's speed control
+    //bee's moving distance
+    public Transform leftPoint;
+    public Transform rightPoint;
+    private bool FaceLeft = true;
+    float leftX;
+    float rightX;
+   
+    
+    
+    public Collider2D colli;
+
+    // Start is called before the first frame update
+   protected override void Start()
+    {
+        base.Start();
+        rgbd = GetComponent<Rigidbody2D>();
+        leftX = leftPoint.position.x;
+        rightX = rightPoint.position.x;
+
+    }
+
+    // Update is called once per frame
+    void FixedUpdate()
+    {
+        Movement();
+
+    }
+    
+    
+    void Movement()   //bee's movement
+    {
+
+        if (FaceLeft == true)
+        {
+
+            transform.Translate(Vector3.left * speed * Time.deltaTime, Space.World);
+            if (transform.position.x < leftX)
+            {
+                transform.localScale = new Vector3(-1, 1, 1);
+                FaceLeft = false;
+            }
+
+        }
+        else
+        {
+            transform.Translate(Vector3.right * speed * Time.deltaTime, Space.World);
+
+            if (transform.position.x > rightX)
+            {
+                transform.localScale = new Vector3(1, 1, 1);
+                FaceLeft = true;
+
+            }
+        }
+    }
+
+
+}
