@@ -24,7 +24,7 @@ public class Player : MonoBehaviour
 
     void Start()
     {
-        HeartNum(); // count the heart at the beginning
+        HeartNum();   // count the heart at the beginning
         rdby = GetComponent<Rigidbody2D>();
        
     }
@@ -32,7 +32,7 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        HeartNum(); // update the heart number
+        HeartNum();   // update the heart number
         CherryNum.text = Cherry.ToString(); 
     }
     void FixedUpdate()
@@ -42,7 +42,7 @@ public class Player : MonoBehaviour
         Move();
         SwitchAnim();
     }
-    void Move()// Make the player move
+    void Move()  // Make the player move
     {   
 
         if (isHurt == false)
@@ -69,7 +69,7 @@ public class Player : MonoBehaviour
 
         }
     }
-    void Jump()// make the player jump
+    void Jump()  // make the player jump
     {
         if (Input.GetButton("Jump") && colli.IsTouchingLayers(ground) && isHurt==false)
         {
@@ -81,7 +81,7 @@ public class Player : MonoBehaviour
         }
 
     }
-    void SwitchAnim()//Change Player's animation
+    void SwitchAnim()  //Change Player's animation
     {
         
        if (rdby.velocity.y < 0.1f && !colli.IsTouchingLayers(ground))
@@ -121,7 +121,7 @@ public class Player : MonoBehaviour
 
         }
     }
-    private void OnTriggerEnter2D(Collider2D collision) // collect cherry and heart
+    private void OnTriggerEnter2D(Collider2D collision)    // collect cherry and heart
     {
         //collect cherry
       if (collision.tag == "collection" && isHurt==false)
@@ -145,7 +145,7 @@ public class Player : MonoBehaviour
        
         
     }
-    private void OnCollisionEnter2D(Collision2D collision) //hurt enemy or be hurt by enemy
+    private void OnCollisionEnter2D(Collision2D collision)    //hurt enemy or be hurt by enemy
     {
         
         
