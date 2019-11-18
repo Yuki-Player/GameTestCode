@@ -14,7 +14,7 @@ public class Player : MonoBehaviour
     public Text CherryNum;
     public float hitForce = 2.0f; // when the player was hit by enemy, there was a hitforce
     public bool isHurt;
-    public AudioSource JumpAudio, HurtAudio, CherryAudio,heartAudio,BGM,DeathAudio; // all the game audio
+    public AudioSource JumpAudio, HurtAudio, CherryAudio,heartAudio,BGM,DeathAudio;   // all the game audio
     private Animator CherryAnim;
     public  int LifeNum = 2;    // player's life
     public Image heart1,heart2,heart3;
