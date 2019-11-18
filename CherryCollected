@@ -1,0 +1,19 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class CherryCollected : MonoBehaviour
+{
+    
+    
+    
+    public void CherryCount()// when the cherry is collected, it is destroyed and the cherry number +1
+    {
+        FindObjectOfType<Player>().CherryCount();
+        Destroy(gameObject);
+        
+        
+
+    }
+}
