@@ -13,18 +13,20 @@ public class Player : MonoBehaviour
     public Collider2D colli;     // player's collider
     public Text CherryNum;
     public float hitForce = 2.0f; // when the player was hit by enemy, there was a hitforce
-    public bool isHurt;
-    public AudioSource JumpAudio, HurtAudio, CherryAudio,heartAudio,BGM,DeathAudio;   // all the game audio
+    public bool isHurt=false;
+    public AudioSource JumpAudio, HurtAudio, CherryAudio,heartAudio,BGM,DeathAudio; // all the game audio
     private Animator CherryAnim;
     public  int LifeNum = 2;    // player's life
     public Image heart1,heart2,heart3;
     private Rigidbody2D rdby;
     public float JumpForce = 10f;
     public int Cherry ; // the collection
+    public GameObject Cookie;
+    public GameObject Platform;
 
     void Start()
     {
-        HeartNum();   // count the heart at the beginning
+        HeartNum(); // count the heart at the beginning
         rdby = GetComponent<Rigidbody2D>();
        
     }
@@ -32,17 +34,17 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        HeartNum();   // update the heart number
+        HeartNum(); // update the heart number
         CherryNum.text = Cherry.ToString(); 
     }
     void FixedUpdate()
     {
 
-        Jump();
+       Jump();
         Move();
         SwitchAnim();
     }
-    void Move()  // Make the player move
+    void Move()// Make the player move
     {   
 
         if (isHurt == false)
@@ -69,7 +71,7 @@ public class Player : MonoBehaviour
 
         }
     }
-    void Jump()  // make the player jump
+    void Jump()// make the player jump
     {
         if (Input.GetButton("Jump") && colli.IsTouchingLayers(ground) && isHurt==false)
         {
@@ -81,17 +83,14 @@ public class Player : MonoBehaviour
         }
 
     }
-    void SwitchAnim()  //Change Player's animation
+    void SwitchAnim()//Change Player's animation
     {
         
        if (rdby.velocity.y < 0.1f && !colli.IsTouchingLayers(ground))
         {
             anim.SetBool("falling", true);
         }
-       if(colli.IsTouchingLayers(ground))
-        {
-            anim.SetBool("jumping", false);
-        }
+       
        if (anim.GetBool("jumping"))
         {
             if (rdby.velocity.y <0)
@@ -121,7 +120,7 @@ public class Player : MonoBehaviour
 
         }
     }
-    private void OnTriggerEnter2D(Collider2D collision)    // collect cherry and heart
+    private void OnTriggerEnter2D(Collider2D collision) // collect cherry and heart
     {
         //collect cherry
       if (collision.tag == "collection" && isHurt==false)
@@ -145,7 +144,7 @@ public class Player : MonoBehaviour
        
         
     }
-    private void OnCollisionEnter2D(Collision2D collision)    //hurt enemy or be hurt by enemy
+    private void OnCollisionEnter2D(Collision2D collision) //hurt enemy or be hurt by enemy
     {
         
         
@@ -158,6 +157,11 @@ public class Player : MonoBehaviour
             LifeNum--;
         }
 
+            //Hiding item
+            if(collision.gameObject.tag=="2")
+        {
+            Platform.SetActive(true);
+        }
 
         Enemy Enemy = collision.gameObject.GetComponent<Enemy>();
 
